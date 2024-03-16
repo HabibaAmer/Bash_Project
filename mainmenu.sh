@@ -4,16 +4,26 @@ shopt -s extglob
 #checking if the dbms directory exists or not 
 if [ -d "./dbms" ] 
 then
-    echo "Directory ./dbms exists." 
+    echo "" 
 else
     mkdir ./dbms
-    echo "Error: Directory ./dbms created successfully."
+    #echo "Error: Directory ./dbms created successfully."
 fi
 
 
 # go to the project directory
 #cd dbms
 
+##separators function
+display_separator() {
+    echo "----------------------------------------"
+}
+
+display_banner() {
+    echo "****************************************"
+    echo "$1"
+    echo "****************************************"
+}
 
 ######Create DB Function
 ###Validation function
@@ -25,8 +35,8 @@ ifExist(){
 	do 
 		if [ -d "$exist" ] && [ "$(basename "$exist")" == "$checkName" ];
 		then
-			echo "Database '$checkName' already exists." 
-			echo "Please choose a different name or Enter a Valid Name or Type 0 to Go Back to The Main Menu"
+			#echo "Database '$checkName' already exists." 
+			#echo "Please choose a different name or Enter a Valid Name or Type 0 to Go Back to The Main Menu"
 			return 1
 		fi
 	done
@@ -56,6 +66,8 @@ while true; do
 			mkdir -p "dbms/$name"
 			echo "Database '$name' created successfully."
 			break
+		else
+			echo "Database Already Exists"
 		fi
 	else
 		echo "Invalid Name"
@@ -71,9 +83,7 @@ if [ -z "$listRes" ]; then
 	echo "There is no created databases"
 else
 	echo "The Available Databases Are:"
-	echo "-----------------------------"
 	ls -F dbms/ | grep "/" | sed 's#/##' 
-	echo "-----------------------------" 
 fi
 }
 
@@ -102,51 +112,59 @@ read -p "Enter the Database Name: " connectname
 if ifExist "$connectname"; then
 	echo "Invalid Name or the Database Doesn't Exist"
 else
-	source ./tables.sh "$connectname"	
+	./tablemenu.sh "$connectname"	
 fi
 }
 
 #mainmenu
-options=("Create DB" "List Records" "Drop DB" "Connect to DB" "Exit")
-PS3="Main Menu: "
-COLUMNS=1
-select opt in "${options[@]}"
-do
-  case $opt in
-    "Create DB")
-      echo 
-      echo "Creating database..."
-      createDB
-      echo "Press any key to see the options again"
-      ;;
-    "List Records")
-      echo
-      echo "Listing database..."
-      listDB
-      echo "Press any key to see the options again"
-      ;;
-    "Drop DB")
-      echo
-      echo "Dropping database..."
-      dropDB
-      echo "Press any key to see the options again"
-      ;;
-    "Connect to DB")
-      echo
-      echo "Connecting to database..."
-      connectDB
-      echo "Press any key to see the options again"
-      ;;
-    "Exit")
-      echo
-      echo "Exiting..."
-      break
-      ;;
-    *)
-      echo
-      echo "Invalid option. Please enter a number between 1 and 5."
-      ;;
-  esac
+while true; do
+	display_banner "Main Menu"
+	display_separator
+	options=("Create DB" "List Records" "Drop DB" "Connect to DB" "Exit")
+	COLUMNS=1
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"Create DB")
+			echo 
+			echo "Creating database..."
+			createDB
+			echo "Press any key to see the options again"
+			;;
+			"List Records")
+			echo
+			echo "Listing database..."
+			listDB
+			echo "Press any key to see the options again"
+			;;
+			"Drop DB")
+			echo
+			echo "Dropping database..."
+			dropDB
+			echo "Press any key to see the options again"
+			;;
+			"Connect to DB")
+			echo
+			echo "Connecting to database..."
+			connectDB
+			echo "Press any key to see the options again"
+			;;
+			"Exit")
+			echo
+			echo "Exiting..."
+			break 2
+			;;
+			*)
+			echo
+			echo "Invalid option. Please enter a number between 1 and 5."
+			;;
+		esac
+		break
+	done
+    display_separator
+    read -n 1 -s -r -p "Press any key to continue..."
+    echo
+    display_separator
 
 done
 
